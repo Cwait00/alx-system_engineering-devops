@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Generating SSH key-pair with a passphrase "betty" according to Task requirements
+
+ssh-keygen -t rsa -b 4096 -f school -N betty

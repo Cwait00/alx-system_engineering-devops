@@ -6,7 +6,12 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-# Use -y option with apt-get
+# Check if Nginx is already installed
+if command -v nginx &> /dev/null; then
+    echo "Nginx is already installed. Exiting."
+    exit 0
+fi
+
 echo -e "Updating and installing Nginx.\n"
 if ! sudo apt-get update -y -qq || ! sudo apt-get install nginx -y; then
     echo "Failed to install Nginx. Exiting."
@@ -16,10 +21,16 @@ fi
 echo -e "\nSetting up some minor stuff.\n"
 
 # Start nginx service
-sudo /etc/init.d/nginx start
+sudo systemctl start nginx
+sudo systemctl enable nginx
 
-# Allow nginx on firewall
-sudo ufw allow 'Nginx HTTP'
+# Allowing nginx on firewall
+if command -v ufw &> /dev/null; then
+    sudo ufw allow 'Nginx HTTP'
+else
+    echo "UFW is not installed. Install it before using this script."
+    exit 1
+fi
 
 # Give the user ownership to website files for easy editing
 sudo chown -R "$USER":"$USER" /var/www/html
@@ -31,7 +42,7 @@ cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.b
 # Creating new index
 echo -e "Hello World!" | dd status=none of=/var/www/html/index.nginx-debian.html
 
-# Restarting nginx using /etc/init.d/nginx
-sudo /etc/init.d/nginx restart
+# Restarting nginx
+sudo systemctl restart nginx
 
 echo -e "\nCompleted. ✅\n"

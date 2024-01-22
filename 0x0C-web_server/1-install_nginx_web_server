@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Check for root privileges
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Please run as root or with sudo."
+    exit 1
+fi
+
+# Use -y option with apt-get
+echo -e "Updating and installing Nginx.\n"
+if ! sudo apt-get update -y -qq || ! sudo apt-get install nginx -y; then
+    echo "Failed to install Nginx. Exiting."
+    exit 1
+fi
+
+echo -e "\nSetting up some minor stuff.\n"
+
+# Start nginx service
+sudo /etc/init.d/nginx start
+
+# Allow nginx on firewall
+sudo ufw allow 'Nginx HTTP'
+
+# Give the user ownership to website files for easy editing
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
+
+# Backup default index
+cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
+
+# Creating new index
+echo -e "Hello World!" | dd status=none of=/var/www/html/index.nginx-debian.html
+
+# Restarting nginx using /etc/init.d/nginx
+sudo /etc/init.d/nginx restart
+
+echo -e "\nCompleted. ✅\n"

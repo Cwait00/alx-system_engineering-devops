@@ -5,14 +5,14 @@
 apt-get update
 apt-get install -y apache2
 
+# Ensure Apache is configured to serve on all addresses
+echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 # Start Apache
 service apache2 start
 
 # Create a simple HTML page with Hello Holberton
 echo "Hello Holberton" > /var/www/html/index.html
-
-# Ensure the necessary permissions
-chmod 644 /var/www/html/index.html
 
 # Restart Apache for changes to take effect
 service apache2 restart

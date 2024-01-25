@@ -2,7 +2,6 @@
 # This script fixes Apache to return a page containing Hello Holberton
 
 # Update and install Apache
-
 apt-get update
 apt-get install -y apache2
 
@@ -13,7 +12,7 @@ service apache2 start
 echo "Hello Holberton" > /var/www/html/index.html
 
 # Ensure the necessary permissions
-chmod +x /var/www/html/index.html
+chmod 644 /var/www/html/index.html
 
 # Restart Apache for changes to take effect
 service apache2 restart

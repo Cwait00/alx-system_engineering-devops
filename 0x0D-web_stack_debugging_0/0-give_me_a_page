@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
-# Turned on Apache Server with this magic line
+# This script fixes Apache to return a page containing Hello Holberton
 
-echo "ServerName localhost" >> /etc/apache2.conf
+# Update and install Apache
+
+apt-get update
+apt-get install -y apache2
+
+# Start Apache
 service apache2 start
+
+# Create a simple HTML page with Hello Holberton
+echo "Hello Holberton" > /var/www/html/index.html
+
+# Ensure the necessary permissions
+chmod +x /var/www/html/index.html
+
+# Restart Apache for changes to take effect
+service apache2 restart

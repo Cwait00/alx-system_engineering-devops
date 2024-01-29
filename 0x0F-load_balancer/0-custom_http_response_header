@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# This script configures Nginx with a custom HTTP response header on a new Ubuntu 16.04 machine
+
+# Check if the system is running Ubuntu 16.04 LTS
+if [ "$(lsb_release -cs)" != "xenial" ]; then
+    echo "This script is intended for Ubuntu 16.04 LTS. Exiting."
+    exit 1
+fi
+
+# Install Nginx
+sudo apt-get update
+sudo apt-get install -y nginx
+
+# Set the hostname
+HOSTNAME=$(hostname)
+
+# Copy Nginx configuration from web-01 to web-02
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/web-02
+sudo sed -i 's/80 default_server;/80;/g' /etc/nginx/sites-available/web-02
+sudo sed -i '/server_name _;/a \ \n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-available/web-02
+sudo ln -sf /etc/nginx/sites-available/web-02 /etc/nginx/sites-enabled/
+
+# Add custom HTTP response header
+sudo sed -i "/server_name _;/a \ \n\tadd_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/web-02
+
+# Restart Nginx
+sudo service nginx restart

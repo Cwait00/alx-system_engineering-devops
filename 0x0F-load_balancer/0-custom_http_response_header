@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
-# This script configures Nginx with a custom HTTP response header on a new Ubuntu 16.04 machine
-
-# Check if the system is running Ubuntu 16.04 LTS
-if [ "$(lsb_release -cs)" != "xenial" ]; then
-    echo "This script is intended for Ubuntu 16.04 LTS. Exiting."
-    exit 1
-fi
+# This script configures Nginx with a custom HTTP response header on a new Ubuntu machine
 
 # Install Nginx
 sudo apt-get update
@@ -14,14 +8,31 @@ sudo apt-get install -y nginx
 # Set the hostname
 HOSTNAME=$(hostname)
 
-# Copy Nginx configuration from web-01 to web-02
-sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/web-02
-sudo sed -i 's/80 default_server;/80;/g' /etc/nginx/sites-available/web-02
-sudo sed -i '/server_name _;/a \ \n\tlocation /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}' /etc/nginx/sites-available/web-02
-sudo ln -sf /etc/nginx/sites-available/web-02 /etc/nginx/sites-enabled/
+# Create a new Nginx configuration file for web-02
+sudo bash -c 'cat << EOF > /etc/nginx/sites-available/web-02
+server {
+    listen 80;
+    listen [::]:80;
 
-# Add custom HTTP response header
-sudo sed -i "/server_name _;/a \ \n\tadd_header X-Served-By $HOSTNAME;" /etc/nginx/sites-available/web-02
+    server_name _;
+
+    location /hbnb_static {
+        alias /data/web_static/current/;
+    }
+
+    add_header X-Served-By $HOSTNAME;
+
+    location / {
+        proxy_pass http://localhost:5001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+EOF'
+
+# Create a symbolic link to enable the new configuration
+sudo ln -sf /etc/nginx/sites-available/web-02 /etc/nginx/sites-enabled/
 
 # Restart Nginx
 sudo service nginx restart

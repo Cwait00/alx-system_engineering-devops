@@ -1,33 +1,30 @@
 #!/usr/bin/env bash
 
-# Check if HAProxy is installed
-if command -v haproxy &>/dev/null; then
-    echo "HAProxy is already installed. Skipping installation."
-else
-    # Install HAProxy
-    sudo apt-get update
-    sudo apt-get install -y haproxy
-fi
+# Configure HAProxy on lb-01 server
+# This script configures HAProxy to send traffic to web-01 and web-02 using a roundrobin algorithm
 
-# Check if HAProxy configuration exists
-haproxy_config="/etc/haproxy/haproxy.cfg"
-if [ -e "$haproxy_config" ]; then
-    echo "HAProxy is already configured. Skipping configuration."
-else
-    # Configure HAProxy
-    sudo bash -c 'cat << EOF > /etc/haproxy/haproxy.cfg
+# Install HAProxy
+sudo apt-get update
+sudo apt-get install -y haproxy
+
+# Configure HAProxy
+sudo tee /etc/haproxy/haproxy.cfg > /dev/null <<'EOF'
 frontend http_front
     bind *:80
     mode http
+    option forwardfor
     default_backend http_back
 
 backend http_back
     mode http
     balance roundrobin
-    server [STUDENT_ID]-web-01 [web-01-IP]:80 check
-    server [STUDENT_ID]-web-02 [web-02-IP]:80 check
-EOF'
+    server web-01 [STUDENT_ID]-web-01:80 check
+    server web-02 [STUDENT_ID]-web-02:80 check
+EOF
 
-    # Restart HAProxy to apply the configuration
-    sudo service haproxy restart
-fi
+# Ensure HAProxy can be managed via an init script
+sudo systemctl enable haproxy
+sudo systemctl restart haproxy
+
+# Exit with success status
+exit 0

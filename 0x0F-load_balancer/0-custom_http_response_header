@@ -1,38 +1,23 @@
 #!/usr/bin/env bash
-# This script configures Nginx with a custom HTTP response header on a new Ubuntu machine
 
-# Install Nginx
+# Configure Nginx to add custom HTTP response header
 sudo apt-get update
 sudo apt-get install -y nginx
 
-# Set the hostname
+# Get the hostname of the server
 HOSTNAME=$(hostname)
 
-# Create a new Nginx configuration file for web-01
-sudo bash -c 'cat << EOF > /etc/nginx/sites-available/web-01
-server {
-    listen 80;
-    listen [::]:80;
+# Create a configuration file for the custom header
+echo "add_header X-Served-By $HOSTNAME;" | sudo tee /etc/nginx/sites-available/custom_header
 
-    server_name _;
+# Create a symbolic link to the sites-enabled directory
+sudo ln -s /etc/nginx/sites-available/custom_header /etc/nginx/sites-enabled/
 
-    location /hbnb_static {
-        alias /data/web_static/current/;
-    }
+# Remove the default symbolic link to default configuration
+sudo rm -f /etc/nginx/sites-enabled/default
 
-    add_header X-Served-By $HOSTNAME;
+# Restart Nginx to apply the changes
+sudo systemctl restart nginx
 
-    location / {
-        proxy_pass http://localhost:5000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-EOF'
-
-# Create a symbolic link to enable the new configuration
-sudo ln -sf /etc/nginx/sites-available/web-01 /etc/nginx/sites-enabled/
-
-# Restart Nginx
-sudo service nginx restart
+# Exit with success status
+exit 0

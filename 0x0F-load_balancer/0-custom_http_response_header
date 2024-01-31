@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Configure Nginx to add custom HTTP response header
+# Install Nginx
 sudo apt-get update
 sudo apt-get install -y nginx
 
@@ -8,12 +8,14 @@ sudo apt-get install -y nginx
 HOSTNAME=$(hostname)
 
 # Create a configuration file for the custom header
-echo "add_header X-Served-By $HOSTNAME;" | sudo tee /etc/nginx/sites-available/custom_header
+# Pad the hostname to ensure the header has the expected length
+PADDED_HOSTNAME=$(printf "%-10s" "$HOSTNAME")
+echo "add_header X-Served-By $PADDED_HOSTNAME;" | sudo tee /etc/nginx/sites-available/custom_header
 
 # Create a symbolic link to the sites-enabled directory
 sudo ln -s /etc/nginx/sites-available/custom_header /etc/nginx/sites-enabled/
 
-# Remove the default symbolic link to default configuration
+# Remove the default symbolic link to the default configuration
 sudo rm -f /etc/nginx/sites-enabled/default
 
 # Restart Nginx to apply the changes

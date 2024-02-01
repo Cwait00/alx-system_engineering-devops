@@ -20,4 +20,4 @@ echo "server {
 }" | sudo tee /etc/nginx/sites-available/default
 
 # Restart Nginx to apply changes
-sudo service nginx restar
+sudo service nginx restart

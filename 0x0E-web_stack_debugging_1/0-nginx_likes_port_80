@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Configures Nginx to listen on port 80
 
-# Remove existing Nginx configuration
-sudo rm /etc/nginx/sites-available/default
+# Remove existing Nginx configuration if it exists
+sudo rm -f /etc/nginx/sites-available/default
 
 # Create a new Nginx configuration
 echo "server {
@@ -17,7 +17,7 @@ echo "server {
     location / {
         try_files $uri $uri/ =404;
     }
-}" | sudo tee /etc/nginx/sites-available/default
+}" | sudo tee /etc/nginx/sites-available/default > /dev/null
 
 # Restart Nginx to apply changes
 sudo service nginx restart

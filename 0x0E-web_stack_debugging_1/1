@@ -1,3 +1,4 @@
+rm: cannot remove '/etc/nginx/sites-available/default': No such file or directory
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -11,4 +12,5 @@ server {
         try_files  / =404;
     }
 }
-Usage: nginx {start|stop|restart|reload|force-reload|status|configtest|rotate|upgrade}
+ * Restarting nginx nginx
+   ...done.

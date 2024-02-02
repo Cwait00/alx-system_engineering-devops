@@ -24,15 +24,7 @@ display_info() {
             record_type="A"
             destination=$(echo "$dig_output" | awk 'NR==1 {print $1}')
 
-            if [ "$sub" == "lb-01" ]; then
-                echo "#student.lb-01"
-            elif [ "$sub" == "web-01" ]; then
-                echo "#student.web-01"
-            elif [ "$sub" == "web-02" ]; then
-                echo "#student.web-02"
-            else
-                echo "The subdomain $sub is a $record_type record and points to $destination"
-            fi
+            echo "The subdomain $sub is a $record_type record and points to $destination"
         fi
     done
 }

@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 # Script to make debugging short and sweet
 
-# Remove existing Nginx configuration if it exists
-sudo rm -f /etc/nginx/sites-available/default
-
 # Create a new Nginx configuration
 nginx_config="server {
     listen 80 default_server;
@@ -19,10 +16,8 @@ nginx_config="server {
     }
 }"
 
+# Write the Nginx configuration to the file
 echo "$nginx_config" | sudo tee /etc/nginx/sites-available/default > /dev/null
 
 # Restart Nginx to apply changes
 sudo service nginx restart
-
-# Check Nginx status
-sudo service nginx status

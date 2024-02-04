@@ -1,41 +1,21 @@
 #!/usr/bin/env bash
-# Script to configure Nginx to listen on port 80
+# Script to debug and fix Nginx not listening on port 80 issue
 
-# Remove existing Nginx configuration if it exists
-sudo rm -f /etc/nginx/sites-available/default
+# Debugging steps
+echo "Checking Nginx status:"
+sudo service nginx status
 
-# Create a new Nginx configuration
-nginx_config="server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+echo "Checking Nginx configuration:"
+sudo nginx -t
 
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-
-    server_name _;
-
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-}"
-
-echo "$nginx_config" | sudo tee /etc/nginx/sites-available/default > /dev/null
-
-# Check if the Nginx configuration was created successfully
-if [ $? -eq 0 ]; then
-    echo "Nginx configuration created successfully."
-else
-    echo "Failed to create Nginx configuration."
-    exit 1
-fi
-
-# Restart Nginx to apply changes
+# Fixing Nginx issue
+echo "Restarting Nginx to apply changes:"
 sudo service nginx restart
 
-# Check if Nginx restart was successful
-if [ $? -eq 0 ]; then
-    echo "Nginx restarted successfully."
-else
-    echo "Failed to restart Nginx."
-    exit 1
-fi
+# Checking Nginx status after fix
+echo "Checking Nginx status after fix:"
+sudo service nginx status
+
+# Checking if Nginx is listening on port 80
+echo "Checking if Nginx is listening on port 80:"
+curl 0:80

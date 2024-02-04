@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Script to make debugging short and sweet
+
+# Remove existing Nginx configuration if it exists
+sudo rm -f /etc/nginx/sites-available/default
+
+# Create a new Nginx configuration
+nginx_config="server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+}"
+
+echo "$nginx_config" | sudo tee /etc/nginx/sites-available/default > /dev/null
+
+# Restart Nginx to apply changes
+sudo service nginx restart
+
+# Check Nginx status
+sudo service nginx status

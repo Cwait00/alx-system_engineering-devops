@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Check if HAproxy is installed
+if ! command -v haproxy &> /dev/null; then
+    echo "HAproxy is not installed. Please install HAproxy (version 1.5 or higher) and try again."
+    exit 1
+fi
+
+# HAproxy configuration file path
+haproxy_cfg="/etc/haproxy/haproxy.cfg"
+
+# Backup the original HAproxy configuration file
+cp "$haproxy_cfg" "$haproxy_cfg.bak"
+
+# Create a new HAproxy configuration file
+cat > "$haproxy_cfg" <<EOF
+# HAproxy configuration for SSL termination
+
+# Frontend configuration for www-frontend
+frontend www-frontend
+    bind *:443 ssl crt /etc/letsencrypt/live/www.holberton.online/fullchain.pem
+    reqadd X-Forwarded-Proto:\ https
+    default_backend www-backend
+
+# Backend configuration for www-backend
+backend www-backend
+    server your-web-server 100.26.202.27:your-web-server-port
+EOF
+
+# Restart HAproxy to apply the changes
+service haproxy restart
+
+echo "HAproxy configuration for SSL termination has been updated. Check for any errors, and make sure your-web-server and your-web-server-port are replaced with the actual server information."

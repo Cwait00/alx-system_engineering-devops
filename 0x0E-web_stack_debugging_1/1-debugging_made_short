@@ -1,23 +1,18 @@
 #!/usr/bin/env bash
 # Script to make debugging short and sweet
 
-# Create a new Nginx configuration
-nginx_config="server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+# Stop Nginx
+service nginx stop
 
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
+# Remove existing Nginx configuration if it exists
+rm -f /etc/nginx/sites-available/default
 
-    server_name _;
+# Start Nginx
+service nginx start
 
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-}"
+# Check Nginx status
+status=$(service nginx status)
+echo "$status"
 
-# Write the Nginx configuration to the file
-echo "$nginx_config" | sudo tee /etc/nginx/sites-available/default > /dev/null
-
-# Restart Nginx to apply changes
-sudo service nginx restart
+# Check if Nginx is listening on port 80
+curl 0:80

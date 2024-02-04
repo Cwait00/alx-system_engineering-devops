@@ -19,3 +19,10 @@ sudo service nginx status
 # Checking if Nginx is listening on port 80
 echo "Checking if Nginx is listening on port 80:"
 curl 0:80
+
+# Checking if Nginx is listening on port 80 for all server's active IPv4 IPs
+server_ips=$(ip -o -4 addr list | awk '{print $4}' | cut -d/ -f1)
+for ip in $server_ips; do
+    echo "Checking if Nginx is listening on port 80 for IP $ip:"
+    curl "$ip":80
+done

@@ -1,30 +1,30 @@
-#!/usr/bin/env bash
-# This script configures Nginx to listen on port 80 and serve a specific domain or IP.
+#!/bin/bash
 
-# Replace 'yourdomain.com' with the actual domain or IP address
-DOMAIN_OR_IP="192.124.249.6"
-
-# Install Nginx if not already installed
+# Update package list and install Nginx
 sudo apt-get update
 sudo apt-get install -y nginx
 
-# Remove default Nginx configuration
-sudo rm -f /etc/nginx/sites-available/default
-sudo rm -f /etc/nginx/sites-enabled/default
+# Check if Nginx is already running
+if ! sudo service nginx status > /dev/null 2>&1; then
+    # If not running, start Nginx
+    sudo service nginx start
+fi
 
-# Create and configure a new Nginx site
+# Ensure Nginx is configured to listen on port 80 for all active IPv4 IPs
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
+sudo sed -i '/listen 80 default_server;/c\    listen 80 default_server;' /etc/nginx/sites-available/default
+
+# Configure a new Nginx site
 sudo tee /etc/nginx/sites-available/web-01 > /dev/null <<EOL
 server {
     listen 80;
     listen [::]:80;
 
-    server_name $DOMAIN_OR_IP;
+    server_name localhost;
 
     location /hbnb_static {
         alias /data/web_static/current/;
     }
-
-    add_header X-Served-By \$hostname;
 
     location / {
         proxy_pass http://localhost:5000;

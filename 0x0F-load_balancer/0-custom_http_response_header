@@ -3,30 +3,32 @@
 
 # Check if Nginx is installed
 if [ ! -x "$(command -v nginx)" ]; then
+  echo "Nginx is not installed. Installing..."
   sudo apt-get update
   sudo apt-get install -y nginx
+else
+  echo "Nginx is already installed."
 fi
 
 # Get the hostname of the server
 HOSTNAME=$(hostname)
 
-# Check if the configuration file exists and add the custom header
-CONFIG_FILE="/etc/nginx/sites-available/custom_header"
-if [ ! -e "$CONFIG_FILE" ]; then
-  echo "add_header X-Served-By $HOSTNAME;" | sudo tee "$CONFIG_FILE"
+# Define the Nginx configuration file
+CONFIG_FILE="/etc/nginx/sites-available/default"
+
+# Check if the Nginx configuration file exists
+if [ -e "$CONFIG_FILE" ]; then
+  echo "Configuring custom header in Nginx..."
+
+  # Add the custom header to the Nginx configuration file
+  sudo sed -i '/server_name _;/a \\tadd_header X-Served-By $HOSTNAME;' "$CONFIG_FILE"
+
+  # Reload Nginx to apply the changes
+  sudo systemctl reload nginx
+else
+  echo "Nginx configuration file not found. Aborting."
+  exit 1
 fi
-
-# Check if the symbolic link doesn't exist, then create it
-SYMBOLIC_LINK="/etc/nginx/sites-enabled/custom_header"
-if [ ! -e "$SYMBOLIC_LINK" ]; then
-  sudo ln -s "$CONFIG_FILE" "$SYMBOLIC_LINK"
-fi
-
-# Remove the default symbolic link to the default configuration
-sudo rm -f /etc/nginx/sites-enabled/default
-
-# Restart Nginx to apply the changes
-sudo systemctl restart nginx
 
 # Exit with success status
-exit 0
+exit 1

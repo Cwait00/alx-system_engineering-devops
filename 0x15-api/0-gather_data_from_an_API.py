@@ -4,6 +4,15 @@ import requests
 import sys
 
 def get_employee_name(employee_id):
+    """
+    Retrieve the name of the employee with the given ID from the API.
+
+    Args:
+        employee_id (int): The ID of the employee.
+
+    Returns:
+        str: The name of the employee, or None if not found.
+    """
     url = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
     response = requests.get(url)
     
@@ -15,6 +24,12 @@ def get_employee_name(employee_id):
     return employee_info['name']
 
 def gather_data_from_api(employee_id):
+    """
+    Gather data from the API for the employee with the given ID and print it.
+
+    Args:
+        employee_id (int): The ID of the employee.
+    """
     url = f'https://jsonplaceholder.typicode.com/users/{employee_id}/todos'
     response = requests.get(url)
     

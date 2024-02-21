@@ -21,7 +21,7 @@ def get_employee_name(employee_id):
         return None
 
     employee_info = response.json()
-    return employee_info['name']
+    return employee_info.get('name')  # Corrected to handle missing name gracefully
 
 def gather_data_from_api(employee_id):
     """
@@ -38,19 +38,29 @@ def gather_data_from_api(employee_id):
         return
 
     todos = response.json()
-    employee_name = get_employee_name(employee_id)
     total_tasks = len(todos)
     completed_tasks = sum(1 for todo in todos if todo['completed'])
-    completed_task_titles = [todo['title'] for todo in todos if todo['completed']]
+
+    # Retrieve employee name
+    employee_name = get_employee_name(employee_id)
+    if employee_name is None:
+        print(f"Error: Unable to retrieve employee name for ID {employee_id}")
+        return
 
     print(f"Employee {employee_name} is done with tasks({completed_tasks}/{total_tasks}):")
-    for title in completed_task_titles:
-        print(f"\t{title}")
+    for todo in todos:
+        if todo['completed']:
+            print(f"\t{todo['title']}")  # Print only completed tasks with correct formatting
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 gather_data_from_an_API.py <employee_id>")
         sys.exit(1)
 
-    employee_id = int(sys.argv[1])
+    try:
+        employee_id = int(sys.argv[1])
+    except ValueError:
+        print("Error: Employee ID must be an integer")
+        sys.exit(1)
+
     gather_data_from_api(employee_id)

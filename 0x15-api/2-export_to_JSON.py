@@ -4,9 +4,8 @@
 This script retrieves information about an employee's TODO list from a REST API and exports it to a JSON file.
 """
 
-import csv
-import requests
 import json
+import requests
 import sys
 
 # Hardcoded name for employee ID 2

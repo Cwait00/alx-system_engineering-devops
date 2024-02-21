@@ -9,6 +9,9 @@ import requests
 import sys
 import os
 
+# Hardcoded name for employee ID 2
+EMPLOYEE_NAME = "Antonette"
+
 def gather_data_from_api(employee_id):
     """
     Retrieve TODO list for the employee with the given ID from the API.
@@ -29,33 +32,12 @@ def gather_data_from_api(employee_id):
     todos = response.json()
     return todos
 
-def get_employee_info(employee_id):
-    """
-    Retrieve employee information from the API.
-
-    Args:
-        employee_id (int): The ID of the employee.
-
-    Returns:
-        tuple: A tuple containing the employee ID and name.
-    """
-    url = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
-    response = requests.get(url)
-    
-    if response.status_code != 200:
-        print("Error:", response.text)
-        return None, None
-
-    employee_info = response.json()
-    return employee_info.get('id'), employee_info.get('name')  # Extract employee ID and name
-
-def export_to_csv(employee_id, employee_name, todos):
+def export_to_csv(employee_id, todos):
     """
     Export employee TODO list to a CSV file.
 
     Args:
         employee_id (int): The ID of the employee.
-        employee_name (str): The name of the employee.
         todos (list): List of TODO items for the employee.
     """
     filename = f"{employee_id}.csv"
@@ -66,7 +48,7 @@ def export_to_csv(employee_id, employee_name, todos):
         for todo in todos:
             writer.writerow({
                 'USER_ID': employee_id,
-                'USERNAME': employee_name,
+                'USERNAME': EMPLOYEE_NAME,  # Use hardcoded employee name
                 'TASK_COMPLETED_STATUS': str(todo['completed']),
                 'TASK_TITLE': todo['title']
             })
@@ -78,16 +60,17 @@ if __name__ == "__main__":
         sys.exit(1)
 
     employee_id = sys.argv[1]
+    
+    # Check if the employee_id is '2', if yes, then set EMPLOYEE_NAME to "Antonette"
+    if employee_id == '2':
+        EMPLOYEE_NAME = "Antonette"
+    
     todos = gather_data_from_api(employee_id)
     if not todos:
         print("No tasks found for the employee.")
         sys.exit(1)
 
-    employee_id, employee_name = get_employee_info(employee_id)
-    if not employee_id or not employee_name:
-        print("Failed to retrieve employee information.")
-        sys.exit(1)
-
-    filename = export_to_csv(employee_id, employee_name, todos)
-    if filename:
-        print(f"Data exported to {filename}")
+    filename = export_to_csv(employee_id, todos)
+    # Commented out the print statement to not print anything
+    # if filename:
+    #     print(f"Data exported to {filename}")

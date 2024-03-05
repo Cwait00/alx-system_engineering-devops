@@ -14,7 +14,7 @@ def number_of_subscribers(subreddit):
         int: The number of subscribers of the subreddit.
     """
     url = f"https://www.reddit.com/r/{subreddit}/about.json"
-    headers = {"User-Agent": "Custom User Agent"}  # Reddit API requires a custom User-Agent header
+    headers = {"User-Agent": "Custom User Agent"}
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:

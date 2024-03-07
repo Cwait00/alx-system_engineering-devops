@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Recursive function that queries the Reddit API, parses the title of 
+Recursive function that queries the Reddit API, parses the title of
 all hot articles,
 and prints a sorted count of given keywords
 """
@@ -8,6 +8,7 @@ import requests
 import re
 
 def count_words(subreddit, word_list, after=None, counts={}):
+
     """
     Recursively queries the Reddit API, parses the title of all hot articles,
     and prints a sorted count of given keywords
@@ -34,19 +35,19 @@ def count_words(subreddit, word_list, after=None, counts={}):
             for post in data['data']['children']:
                 title = post['data']['title']
                 for word in word_list:
-                    # Case-insensitive search for words not
+                    #Case-insensitive search for words not
                     #preceded or followed by other letters
                     matches = re.findall(rf'(?<![a-zA-Z]){word}(?![a-zA-Z])',
-                            title, re.IGNORECASE)
+                                            title, re.IGNORECASE)
                     if matches:
                         counts[word.lower()] = counts.get(word.lower(), 0)
                         + len(matches)
             if data['data']['after']:
                 return count_words(subreddit, word_list, data['data']
-                        ['after'], counts)
+                                    ['after'], counts)
             else:
                 sorted_counts = sorted(counts.items(), key=lambda x:
-                        (-x[1], x[0]))
+                                        (-x[1], x[0]))
                 for word, count in sorted_counts:
                     print(f"{word.lower()}: {count}")
         else:

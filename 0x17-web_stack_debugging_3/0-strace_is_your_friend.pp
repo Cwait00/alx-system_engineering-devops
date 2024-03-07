@@ -1,5 +1,3 @@
-# Puppet manifest to fix Apache 500 error and ensure correct page is returned
-
 # Ensure Apache package is installed
 package { 'apache2':
   ensure => installed,
@@ -8,7 +6,7 @@ package { 'apache2':
 # Fix Apache configuration
 file { '/etc/apache2/apache2.conf':
   ensure  => file,
-  source  => 'puppet:///modules/apache2/apache2.conf.erb', # Correct the path to the template file
+  content => template('apache2/apache2.conf.erb'),
   notify  => Service['apache2'],
 }
 

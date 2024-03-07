@@ -23,14 +23,17 @@ def top_ten(subreddit):
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
-        data = response.json()
-        if 'data' in data and 'children' in data['data']:
-            for post in data['data']['children']:
-                print(post['data']['title'])
-        else:
-            print("None")
+        try:
+            data = response.json()
+            if 'data' in data and 'children' in data['data']:
+                for post in data['data']['children']:
+                    print(post['data']['title'])
+            else:
+                print("No hot posts found for this subreddit.")
+        except ValueError:
+            print("Error: Invalid JSON response from the Reddit API.")
     else:
-        print("None")
+        print("Error: Failed to fetch data from the Reddit API. Please check the subreddit name.")
 
 if __name__ == '__main__':
     import sys

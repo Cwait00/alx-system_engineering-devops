@@ -1,4 +1,0 @@
-server 10.251.0.2
-zone ec2.internal
-update add 483634-web-01.ec2.internal 3600 A SERVER_IP
-send

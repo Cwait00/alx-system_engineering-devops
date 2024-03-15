@@ -9,35 +9,35 @@ file { '/etc/nginx/nginx.conf':
     pid /run/nginx.pid;
 
     events {
-        worker_connections 768;
-        # multi_accept on;
+      worker_connections 1000;
+      # multi_accept on;
     }
 
     http {
 
-        ##
-        # Basic Settings
-        ##
+      ##
+      # Basic Settings
+      ##
 
-        sendfile on;
-        tcp_nopush on;
-        tcp_nodelay on;
-        keepalive_timeout 65;
-        types_hash_max_size 2048;
+      sendfile on;
+      tcp_nopush on;
+      tcp_nodelay on;
+      keepalive_timeout 65;
+      types_hash_max_size 2048;
 
-        server {
-            listen 80 default_server;
-            listen [::]:80 default_server;
+      server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
 
-            root /var/www/html;
-            index index.html index.htm index.nginx-debian.html;
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
 
-            server_name _;
+        server_name _;
 
-            location / {
-                try_files $uri $uri/ =404;
-            }
+        location / {
+          try_files $uri $uri/ =404;
         }
+      }
     }
   ",
 }

@@ -9,7 +9,7 @@ file { '/etc/nginx/nginx.conf':
     pid /run/nginx.pid;
 
     events {
-      worker_connections 1000;
+      worker_connections 1000; # Adjusted to handle 1000 requests with 100 at a time
       # multi_accept on;
     }
 

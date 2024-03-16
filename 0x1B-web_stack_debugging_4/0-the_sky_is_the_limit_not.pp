@@ -9,7 +9,8 @@ file { '/etc/nginx/nginx.conf':
     pid /run/nginx.pid;
 
     events {
-      worker_connections 1000; # Adjusted to handle 1000 requests with 100 at a time
+      worker_connections 1000; # Adjusted to handle 1000
+				#requests with 100 at a time
       # multi_accept on;
     }
 
@@ -35,7 +36,7 @@ file { '/etc/nginx/nginx.conf':
         server_name _;
 
         location / {
-          try_files $uri $uri/ =404;
+          try_files ${uri} ${uri}/ =404;
         }
       }
     }
